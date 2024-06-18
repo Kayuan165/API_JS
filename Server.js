@@ -1,17 +1,27 @@
 import express, { json, request, response } from "express";
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 const app = express()
 app.use(express.json())
 
-const users = []
 
-app.post('/usuarios', (req, res) => {
+app.post('/usuarios', async (req, res) => {
 
-    users.push(req.body)
+    await prisma.user.create({
+        data:{
+            email: req.body.Email,
+            name: req.body.Name,
+            age: req.body.Age
+        }
+    })
     res.status(201).json(req.body)
 })
 
-app.get('/usuarios', (req, res) => {
+app.get('/usuarios', async (req, res) => {
+
+    const users = await prisma.user.findMany()
     res.status(200).json(users)
 })
 
@@ -27,4 +37,7 @@ app.listen(3000)
 
     Erro 404: Erro cliente (front-end)
     Erro 505: Erro servidor (back-end)
+
+    kayuandiasoli
+    CkpBfRBOmZhy5l7S
 */
