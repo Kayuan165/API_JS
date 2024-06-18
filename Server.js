@@ -10,7 +10,7 @@ app.use(express.json())
 app.post('/usuarios', async (req, res) => {
 
     await prisma.user.create({
-        data:{
+        data: {
             email: req.body.Email,
             name: req.body.Name,
             age: req.body.Age
@@ -21,9 +21,56 @@ app.post('/usuarios', async (req, res) => {
 
 app.get('/usuarios', async (req, res) => {
 
-    const users = await prisma.user.findMany()
+    let users = []
+
+    if (req.query) {
+
+        users = await prisma.user.findMany({
+            where: {
+                name: req.query.Name,
+                email: req.query.Email,
+                age: req.query.Age
+            }
+        })
+
+    } else {
+
+        const users = await prisma.user.findMany()
+
+    }
+
+
+
     res.status(200).json(users)
 })
+
+app.delete('/usuarios/:id', async (req, res) => {
+
+    await prisma.user.delete({
+        where: {
+            id: req.params.id
+        }
+    })
+
+    res.status(200).json({ message: "Usuário deletado com sucesso" })
+})
+
+app.put('/usuarios/:id', async (req, res) => {
+
+    await prisma.user.update({
+        where: {
+            id: req.params.id
+        },
+        data: {
+            email: req.body.Email,
+            name: req.body.Name,
+            age: req.body.Age
+        }
+    })
+    res.status(200).json(req.body)
+
+})
+
 
 app.listen(3000)
 
